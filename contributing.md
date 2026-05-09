@@ -14,4 +14,4 @@ Contributions are welcome! Please see [CONTRIBUTING.md](https://github.com/sixmo
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/sixmonkey/sloth/blob/main/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
