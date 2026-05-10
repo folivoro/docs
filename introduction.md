@@ -4,10 +4,6 @@ Sloth is a polymorphic WordPress application framework. It brings Laravel patter
 
 The word *polymorphic* is deliberate: Sloth adapts to how your project is structured, rather than enforcing a fixed directory layout.
 
-:::note
-Sloth is currently available as `sixmonkey/sloth` on Packagist. With the 2.0 release it will move to `folivoro/framework`. The examples below already use the new name.
-:::
-
 ## Two modes
 
 ### Classic mode
@@ -53,7 +49,7 @@ Place the theme in `wp-content/themes/` and activate it in the WordPress admin.
 **Theme mode** — add Sloth to an existing theme:
 
 ```bash
-composer require folivoro/framework
+composer require folivoro/sloth
 ```
 
 Then bootstrap in `functions.php`:
@@ -67,7 +63,7 @@ Application::configure()->boot();
 **Classic mode** — add Sloth and Cecropia to an existing WordPress project:
 
 ```bash
-composer require folivoro/framework
+composer require folivoro/sloth
 composer require folivoro/cecropia
 ```
 
