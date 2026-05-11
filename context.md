@@ -168,3 +168,46 @@ app('context')->toArray();
 :::tip Production deployment
 After adding new context providers, run `wp sloth manifest:clear` to regenerate the manifest cache. See [Auto-Discovery](auto-discovery#clearing-the-manifest-cache).
 :::
+
+## Testing context providers
+
+If your provider calls WordPress functions directly, they may be loaded before Patchwork and cannot be mocked in tests. Wrap them in an injectable class instead:
+
+```php
+// app/Context/MyWordPressWrapper.php
+class MyWordPressWrapper
+{
+    public function getSomeValue(): string
+    {
+        return (string) some_wp_function();
+    }
+}
+
+// app/Context/MyProvider.php
+class MyProvider extends ContextProvider
+{
+    public function __construct(
+        private readonly MyWordPressWrapper $wrapper
+    ) {}
+
+    public function key(): string { return 'my_key'; }
+
+    public function resolve(): mixed
+    {
+        return $this->wrapper->getSomeValue();
+    }
+}
+```
+
+Register via a service provider:
+
+```php
+public function boot(): void
+{
+    app('context')->register(
+        new MyProvider(app(MyWordPressWrapper::class))
+    );
+}
+```
+
+Sloth uses `BlogInfo` internally for exactly this reason — it wraps `get_bloginfo()` and `home_url()` so `SiteContextProvider` is fully testable. Inject it via `app(BlogInfo::class)` if you need the same values in your own provider.
