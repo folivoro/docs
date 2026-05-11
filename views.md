@@ -24,11 +24,18 @@ Every Twig template receives these variables automatically:
 
 ```twig
 {# Site information #}
+```twig
+{# Site information — values are resolved via get_bloginfo() and apply its filters #}
 {{ site.name }}
 {{ site.description }}
 {{ site.url }}
 {{ site.language }}
 {{ site.canonical_url }}
+```
+
+:::note
+`site.*` values come from `get_bloginfo()` — not raw `get_option()`. This means WordPress filters like `bloginfo` are applied, and plugins that modify these values will be respected. If you need the raw option value, use `{{ options.blogname }}` instead.
+:::
 
 {# Global URLs #}
 {{ globals.home_url }}
