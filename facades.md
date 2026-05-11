@@ -54,8 +54,10 @@ Response::redirect('/new-url');
 Response::download('/path/to/file.pdf', 'report.pdf');
 
 // Options
-Options::get('my_option');
-Options::set('my_option', 'value');
+Options::get('blogname');
+Options::get('primary_color', '#000');
+options('blogname');        // global helper
+options('primary_color');   // with default
 
 // File
 File::get('/path/to/file.txt');

@@ -24,15 +24,12 @@ Fields are fetched via `get_fields()` on retrieval and cached per model instance
 
 ## Options pages
 
-Sloth provides an `Options` facade and `options` Twig global for accessing ACF options pages:
+Sloth provides a dedicated Options API for ACF options pages. See [Options](options) for the full documentation.
 
 ```php
 use Sloth\Facades\Options;
 
 Options::get('my_option_field');
-Options::has('my_option_field');
-Options::set('my_option_field', 'value');
-Options::delete('my_option_field');
 ```
 
 In Twig:
@@ -40,8 +37,6 @@ In Twig:
 ```twig
 {{ options.my_option_field }}
 ```
-
-Values are resolved in this order: ACF options first, `get_option()` as fallback. This means standard WordPress options are accessible through the same API.
 
 ## ACF in Twig
 
