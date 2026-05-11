@@ -15,6 +15,7 @@ On boot, Sloth scans a set of directories and builds a manifest — a cached PHP
 | `Taxonomy/` | Classes extending `Sloth\Model\Taxonomy` |
 | `Module/` | Classes extending `Sloth\Module\Module` |
 | `Api/` | Classes extending `Sloth\Api\Controller` |
+| `Context/` | Classes extending `Sloth\Context\ContextProvider` |
 | `Includes/` | All `.php` files — loaded via `require_once` on every request |
 
 In Classic mode, Sloth scans both `app/{Directory}/` and `theme/{Directory}/`. In Theme mode, only `theme/{Directory}/` exists, but the scanner handles this gracefully — a missing directory is simply skipped.
