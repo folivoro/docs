@@ -65,3 +65,16 @@ See [Views](views) for details on the new Extension system.
 - `Configure` facade — use `config()` directly
 - `InspireCommand` — moved to the starters
 - `bootstrap.php` — dotenv is now loaded automatically by Sloth
+
+### View layer restructure
+
+The View layer has been reorganised. If you referenced internal View classes directly, update your imports:
+
+| Old | New |
+|-----|-----|
+| `Sloth\View\Engines\TwigEngine` | `Sloth\View\Engines\Twig\Engine` |
+| `Sloth\View\Extensions\SlothTwigExtension` | `Sloth\View\Engines\Twig\Extension` |
+| `Sloth\View\Formatter` | `Sloth\View\Extensions\Formatter` |
+| `Sloth\View\Helper` | `Sloth\View\Extensions\Helper` |
+
+These are internal framework classes — if you extended them directly, consider using the new auto-discovery system via `theme/Extensions/View/Formatters/` and `theme/Extensions/View/Helpers/` instead.
