@@ -56,6 +56,22 @@ We strongly recommend against using `Includes/` for new code, and encourage migr
 If your include registers WordPress hooks or filters, move it to a service provider and use `getHooks()` / `getFilters()` instead. This gives Sloth full control over registration order and timing.
 :::
 
+## View Extensions
+
+Classes in `app/Extensions/View/` and `theme/Extensions/View/` extending `Sloth\View\Extensions\AbstractViewExtension` are discovered automatically and registered with all active template engines.
+
+```php
+// theme/Extensions/View/PriceExtension.php
+class PriceExtension extends \Sloth\View\Extensions\AbstractViewExtension
+{
+    public function getHelpers(): array   { return ['currency' => fn($v) => ...]; }
+    public function getDirectives(): array { return ['wp_head' => 'wp_head']; }
+    public function share(): array        { return ['my_var' => 'value']; }
+}
+```
+
+See [Views](views#extending-twig) for details.
+
 ## Vendor packages
 
 Sloth also discovers service providers from installed Composer packages. Any package that declares providers in its `composer.json` under `extra.folivoro.providers` is picked up automatically:

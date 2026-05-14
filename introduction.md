@@ -57,7 +57,7 @@ Then bootstrap in `functions.php`:
 ```php
 use Sloth\Core\Application;
 
-Application::configure()->boot();
+Application::configure(basePath: __DIR__)->boot();
 ```
 
 **Classic mode** — add Sloth and Cecropia to an existing WordPress project:
@@ -77,13 +77,23 @@ Cecropia has type `wordpress-muplugin` and will be placed automatically if your 
 
 ## How Sloth detects the mode
 
-Sloth resolves the project base path automatically on boot, in this order:
+Pass the base path explicitly — no guessing needed:
 
-1. `SLOTH_BASE_PATH` constant — must be defined before WordPress bootstraps (e.g. in `wp-config.php`)
-2. Walk up from `ABSPATH` until a `composer.json` outside `vendor/` is found → **Classic mode**
-3. Fall back to `get_template_directory()` → **Theme mode**
+```php
+// Theme mode — __DIR__ is the theme root = App-Root
+Application::configure(basePath: __DIR__)->boot();
 
-No configuration flag required.
+// Classic mode — explicit App-Root
+Application::configure(basePath: __DIR__ . '/app')->boot();
+```
+
+If no `basePath` is passed, Sloth resolves the App-Root automatically:
+
+1. `SLOTH_BASE_PATH` constant — must be defined before WordPress bootstraps, used as-is
+2. Walk up from `ABSPATH` until a `composer.json` outside `vendor/` is found → **Classic mode** → App-Root = `${project}/app/`
+3. Fall back to `get_template_directory()` → **Theme mode** → App-Root = theme directory
+
+In both modes, all auto-discovered classes (`Model/`, `Module/`, `Providers/` etc.) and `storage/` live relative to the App-Root.
 
 ## Environment
 

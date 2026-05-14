@@ -1,149 +1,130 @@
 # Configuration
 
-Sloth uses two complementary configuration systems: **Laravel's config repository** (the primary system) and **`Configure`** (a legacy store kept for backwards compatibility).
+Sloth uses Laravel's config system. Config files live in `config/` and are loaded automatically on boot.
+
+:::warning Deprecated
+`Configure::write()` and `Configure::read()` are deprecated as of Sloth 2.0 and will be removed in a future release. Use `config()` and publishable config files instead. See the [upgrade guide](upgrade#config-system-overhaul).
+:::
 
 ## Config files
 
-Configuration files live in `app/config/` and are loaded automatically on boot. Each file must return an array and its filename becomes the config key. Create them as needed — there are no required files:
+Publish Sloth's built-in config files to your project:
+
+```bash
+wp sloth vendor:publish --tag=config
+```
+
+This creates:
 
 ```
-app/config/
-├── theme.php         # config('theme')
-├── events.php        # config('events')
-└── layotter.php      # config('layotter')
+config/
+├── app.php        # Relative URLs, WP JSON
+├── theme.php      # Menus, image sizes, theme supports
+├── admin.php      # Hide updates, admin footer
+├── cache.php      # Cache driver and prefix
+├── debugger.php   # DebugBar settings
+├── events.php     # Event bridge settings
+└── layotter.php   # Layotter bridge settings
+```
+
+Add your own config files as needed — any file in `config/` is loaded automatically:
+
+```php
+// config/payment.php
+return [
+    'provider' => env('PAYMENT_PROVIDER', 'stripe'),
+    'key'      => env('PAYMENT_KEY'),
+];
 ```
 
 ```php
-// app/config/theme.php
+config('payment.provider'); // 'stripe'
+config('payment.key');      // null
+config('missing', 'default'); // 'default'
+```
+
+## Core config files
+
+### `config/theme.php`
+
+```php
 return [
-    'twig' => [
-        'autoescape' => false,
-        'filters'    => [],
-        'functions'  => [],
+    'menus' => [
+        'primary' => 'Primary Navigation',
+        'footer'  => 'Footer Navigation',
+    ],
+
+    'image_sizes' => [
+        'hero' => [1920, 1080, true],
+    ],
+
+    'supports' => [
+        'title-tag',
+        'post-thumbnails',
+        'html5' => ['search-form', 'comment-form', 'gallery'],
+    ],
+
+    'process_acf' => true,
+];
+```
+
+### `config/app.php`
+
+```php
+return [
+    'relative_urls'    => false,  // Convert all URLs to relative
+    'relative_links'   => false,  // Convert link hrefs only
+    'relative_uploads' => false,  // Convert upload srcs only
+
+    'wp_json' => [
+        'base_url' => 'wp-json', // REST API base URL prefix
     ],
 ];
 ```
 
-Read values anywhere with `config()`:
+### `config/admin.php`
 
 ```php
-config('theme.twig.autoescape');   // false
-config('theme.twig.filters');      // []
-config('missing.key', 'default'); // 'default'
+return [
+    'hide_updates' => [
+        'core'    => false,
+        'plugins' => false,
+        'themes'  => false,
+    ],
+    'footer'       => true,
+    'cleanup_menu' => true,
+];
 ```
 
 ## Environment variables
 
-Environment variables are loaded from `.env` automatically before boot. Use `env()` to read them:
+Environment variables are loaded from `.env` before boot. Use `env()` to read them:
 
 ```php
-env('WP_ENV', 'production');  // 'local', 'development', 'staging', 'production'
+env('WP_ENV', 'production');
 env('APP_SECRET');
 env('DB_NAME');
 ```
 
-The `.env` file lives at the project root — next to `composer.json` in Classic mode, or inside the theme in Theme mode.
+The `.env` file lives at the project root — next to `composer.json` in both modes. In Theme mode that's the theme directory, in Classic mode that's the project root (not inside `app/`).
 
 ### Environments
 
 `WP_ENV` controls the environment:
 
-| Value | `isLocal()` | `isProduction()` |
-|-------|-------------|------------------|
+| Value | `app()->isLocal()` | `app()->isProduction()` |
+|-------|-------------------|------------------------|
 | `local` | `true` | `false` |
-| `development`, `develop`, `dev` | `true` | `false` |
-| `testing` | `false` | `true` |
-| `staging`, `production`, anything else | `false` | `true` |
+| `development` | `true` | `false` |
+| `staging` | `false` | `false` |
+| `production` | `false` | `true` |
 
-`local` is the recommended value for local development.
-
-```php
-app()->isLocal();       // true when WP_ENV is local/development/develop/dev
-app()->isProduction();  // true for everything else
-app()->environment();   // returns WP_ENV value directly
-```
-
-## Overriding config at runtime
+## Writing config values at runtime
 
 ```php
-// In a service provider or config file
-config(['theme.twig.autoescape' => true]);
-
-// Using dot notation
-config(['my.nested.key' => 'value']);
+config(['theme.menus.primary' => 'Main Menu']);
 ```
 
-## Theme config
+## Overriding framework defaults
 
-The theme can also have a `config.php` directly in its root — loaded before other providers boot:
-
-```php
-// theme/config.php
-use Twig\TwigFilter;
-
-Configure::write('theme.twig.filters', [
-    new TwigFilter('my_filter', fn($v) => transform($v)),
-]);
-```
-
-## Configure (legacy)
-
-`Configure` is a standalone key-value store that predates the Laravel config system. It's kept for backwards compatibility — new code should use `config()` directly.
-
-```php
-use Sloth\Configure\Configure;
-
-// Write
-Configure::write('theme.foo', 'bar');
-Configure::write(['theme.foo' => 'bar', 'theme.baz' => 'qux']);
-
-// Read
-Configure::read('theme.foo');          // 'bar'
-Configure::read('theme.foo', 'default'); // with default
-Configure::read();                     // all values
-
-// Check and delete
-Configure::check('theme.foo');         // true
-Configure::delete('theme.foo');
-```
-
-Values written via `Configure::write()` are merged into the Laravel config repository on boot, so `config('theme.foo')` and `Configure::read('theme.foo')` both work. Laravel config files take precedence over `Configure` values.
-
-:::tip
-Migrate `Configure::write()` calls to config files that return arrays — it's cleaner and integrates better with the rest of the framework.
-:::
-
-## Framework config
-
-Framework components ship their own config files that can be extended in `app/config/`. For example, to add hooks to the Event Bridge:
-
-```php
-// app/config/events.php
-return [
-    'bridge' => [
-        'save_post'        => 'action',
-        'wp_nav_menu_args' => 'filter',
-    ],
-];
-```
-
-Framework defaults are merged with your values via `array_replace_recursive` — you only need to specify what you want to change.
-
-## Reading config from the CLI
-
-```bash
-wp sloth config:get theme.twig.autoescape
-wp sloth config:get app.name
-```
-
-Returns the value as JSON. Exits with code `1` if the key does not exist.
-
-## Publishing framework config files
-
-Framework components ship default config files that can be published into your project for customization:
-
-```bash
-wp sloth vendor:publish --provider="Sloth\Event\EventServiceProvider" --tag=config
-```
-
-This copies the default `events.php` into `app/config/` where you can extend it. Your values are merged with the framework defaults — you only need to specify what you want to change.
+Published config files take precedence over Sloth's built-in defaults. Unpublished keys always fall back to Sloth's defaults — you only need to publish and edit the keys you want to change.

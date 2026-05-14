@@ -37,6 +37,7 @@ Every Twig template receives these variables automatically:
 `site.*` values come from `get_bloginfo()` — not raw `get_option()`. This means WordPress filters like `bloginfo` are applied, and plugins that modify these values will be respected. If you need the raw option value, use `{{ options.blogname }}` instead.
 :::
 
+``` twig
 {# Global URLs #}
 {{ globals.home_url }}
 {{ globals.theme_url }}
@@ -134,24 +135,93 @@ return Response::view('Layout/projects', ['projects' => $projects]);
 
 ## Extending Twig
 
-Register custom functions and filters in `app/config/theme.php` or `theme/config/theme.php`:
+Sloth uses a `AbstractViewExtension` system for registering custom helpers and directives. Drop a subclass in `app/Extensions/View/` or `theme/Extensions/View/` and Sloth discovers it automatically.
+
+### Helpers
+
+Helpers transform a value — registered as Twig filters:
 
 ```php
-<?php
+// theme/Extensions/View/PhoneExtension.php
+class PhoneExtension extends \Sloth\View\Extensions\AbstractViewExtension
+{
+    public function getHelpers(): array
+    {
+        return [
+            'format_phone' => fn($number) => preg_replace('/[^0-9\+]/', '', $number),
+            'tel'          => fn($number) => 'tel:' . preg_replace('/[^0-9\+]/', '', $number),
+        ];
+    }
+}
+```
 
-use Twig\TwigFilter;
-use Twig\TwigFunction;
+```twig
+{{ '+49 123 456 789' | format_phone }}
+{{ '+49 123 456 789' | tel }}
+```
 
+### Directives
+
+Directives generate output or call actions — registered as Twig functions:
+
+```php
+// theme/Extensions/View/PriceExtension.php
+class PriceExtension extends \Sloth\View\Extensions\AbstractViewExtension
+{
+    public function getDirectives(): array
+    {
+        return [
+            'format_price' => fn(float $value, string $currency = 'EUR') => 
+                number_format($value, 2) . ' ' . $currency,
+        ];
+    }
+}
+```
+
+```twig
+{{ format_price(9.99) }}
+{{ format_price(9.99, 'USD') }}
+```
+
+### Shared variables
+
+Variables available in all templates:
+
+```php
+public function share(): array
+{
+    return [
+        'my_global' => 'value',
+    ];
+}
+```
+
+```twig
+{{ my_global }}
+```
+
+### Custom names
+
+Use string keys to control the name in templates — useful for names that aren't valid PHP identifiers:
+
+```php
+public function getDirectives(): array
+{
+    return [
+        'pll__' => fn(string $s) => pll__($s),  // {{ pll__('Hello') }}
+    ];
+}
+```
+
+### Array formats
+
+All three methods support the same formats — analogous to `getHooks()`/`getFilters()` in service providers:
+
+```php
 return [
-    'twig' => [
-        'functions' => [
-            new TwigFunction('my_function', fn() => my_function()),
-        ],
-        'filters' => [
-            new TwigFilter('my_filter', fn($value) => transform($value)),
-        ],
-        'autoescape' => false,
-    ],
+    'wp_head',                          // string — callable of same name
+    'pll__'  => 'pll__',               // alias → callable string
+    'format' => fn($v) => transform($v), // closure
 ];
 ```
 

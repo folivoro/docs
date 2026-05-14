@@ -83,7 +83,9 @@ class CurrentYear extends \Sloth\View\Helper
 
 The naming is engine-agnostic — a future Blade driver maps Formatters to directives and Helpers to Blade helpers without any changes to theme code.
 
-### feat/context — LazyContext
+### ~~feat/context~~ — done ✓
+
+Context is now lazy and extensible. See [Context](context) for details.
 
 `Context.php` will be rebuilt as a lazy, extensible system. Currently all context values are resolved eagerly on every request — even if the template never uses them.
 

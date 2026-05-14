@@ -68,8 +68,9 @@ my-theme/
 │   └── Module/           # Module templates
 │       ├── hero.twig
 │       └── featured-projects.twig
-├── cache/                # Auto-created — add to .gitignore
-├── logs/                 # Auto-created — add to .gitignore
+├── storage/              # Auto-created — add to .gitignore
+│   ├── cache/            # Twig and manifest cache
+│   └── logs/             # Application logs
 └── functions.php
 ```
 
@@ -84,6 +85,9 @@ Sloth scans both `app/{Directory}/` and `theme/{Directory}/` for each concern. T
 | `Module/` | UI modules |
 | `Api/` | REST API controllers |
 | `Providers/` | Service providers |
+| `Context/` | Template context providers |
+| `Extensions/View/Formatters/` | Twig filters |
+| `Extensions/View/Helpers/` | Twig functions |
 | `Includes/` | PHP files required automatically on `init` |
 | `config/` | Configuration files loaded into `config()` |
 
