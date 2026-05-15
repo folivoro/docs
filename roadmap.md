@@ -50,6 +50,13 @@ composer remove folivoro/climb
 
 `climb` uses PHP parsing (`nikic/php-parser`) to find and rewrite legacy code. For `theme.twig.filters` and `theme.twig.functions` it will warn and point to the new Extension system, as those require manual migration.
 
+Migrations handled by `climb`:
+
+- Rewrites `Configure::write()` calls to the new config key structure
+- Removes `Sloth\Installer\Installer` from Composer scripts
+- Removes `bootstrap.php`, `wp-config.php`, `.htaccess` from `.gitignore` — these are now project-owned files
+- Warns about `theme.twig.filters` / `theme.twig.functions` → View Extensions
+
 ### folivoro/acf-flexible-content
 
 Port `FlexibleContentRenderer` + `ServiceProvider` from koalapress.

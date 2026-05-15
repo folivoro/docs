@@ -143,21 +143,40 @@ class PhoneExtension extends \Sloth\View\Extensions\AbstractViewExtension
 
 ---
 
-### Layotter is an optional dependency
+### Infrastructure files now owned by the project
 
-In previous versions of sloth the fantastic plugin Layotter by Dennis Hingst used to be integrated into sloth by default.
+In Sloth 1.x, the Installer automatically created and updated `bootstrap.php`, `wp-config.php` and `.htaccess` on every `composer install` / `composer update`. In 2.0 the Installer is removed — these files are now fully owned by your project.
 
-As the evolution of page builders in WordPress went on and sloth will support several page builders in future.
+**What to do:**
 
-If you use Layotter in your projects and want to keep ist, now you simply have to install [LayotterBridge](https://github.com/folivoro/layotter-bridge):
+1. Make sure these files exist in your repository and are committed:
+   - `bootstrap.php`
+   - `public/wp-config.php`
+   - `public/.htaccess`
+   - `.env.example`
 
-```composer
-composer require folivoro/layotter-bridge
+2. Remove them from `.gitignore` if present:
+
+```diff
+- bootstrap.php
+- public/wp-config.php
+- public/.htaccess
 ```
 
----
+3. Remove the Composer scripts from your `composer.json`:
 
-### `.env` location
+```diff
+- "post-install-cmd": [
+-     "Sloth\\Installer\\Installer::config"
+- ],
+- "post-update-cmd": [
+-     "Sloth\\Installer\\Installer::config"
+- ]
+```
+
+`folivoro/climb` will detect and handle this migration automatically when you run `wp sloth modernize`.
+
+
 
 Sloth now walks up from the App-Root to find `.env` automatically. In Classic mode, `.env` should live next to `composer.json` in the **project root** — not inside `app/`:
 
