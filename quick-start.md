@@ -8,6 +8,12 @@ It assumes you've already installed Sloth via one of the starters. If not, see [
 
 Models represent WordPress custom post types. Drop a class into `app/Model/` (Classic mode) or `theme/Model/` (Theme mode) and Sloth registers it automatically.
 
+```bash
+wp sloth make:model Project
+```
+
+Or manually:
+
 ```php
 <?php
 
@@ -77,6 +83,12 @@ If you need more than WordPress routing offers — custom endpoints, URL paramet
 ## 3. Create a Module
 
 Modules are reusable UI components that pair a PHP class with a Twig template. Drop a class into `app/Module/` or `theme/Module/` and Sloth discovers it automatically.
+
+```bash
+wp sloth make:module FeaturedProjects
+```
+
+Or manually:
 
 ```php
 <?php

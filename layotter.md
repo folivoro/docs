@@ -2,6 +2,12 @@
 
 [Layotter](https://github.com/layotter/layotter) is a WordPress page builder plugin, originally developed by Dennis Hingst at [Quäntchen + Glück](https://www.qug.de/). Built before Gutenberg existed, it was an innovative approach to structured content editing — and one of the core inspirations for Sloth itself. Sloth originally grew out of Layotter and [Modulator](https://github.com/qundg/modulator), both largely his work.
 
+Layotter used to be integrated in prior versions of sloth. Now it is an optional dependency and has to be installed via
+
+```composer
+composer require folivoro/layotter-bridge
+```
+
 :::note
 Layotter must be installed and activated as a WordPress plugin for this integration to work.
 :::

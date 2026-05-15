@@ -143,6 +143,20 @@ class PhoneExtension extends \Sloth\View\Extensions\AbstractViewExtension
 
 ---
 
+### Layotter is an optional dependency
+
+In previous versions of sloth the fantastic plugin Layotter by Dennis Hingst used to be integrated into sloth by default.
+
+As the evolution of page builders in WordPress went on and sloth will support several page builders in future.
+
+If you use Layotter in your projects and want to keep ist, now you simply have to install [LayotterBridge](https://github.com/folivoro/layotter-bridge):
+
+```composer
+composer require folivoro/layotter-bridge
+```
+
+---
+
 ### `.env` location
 
 Sloth now walks up from the App-Root to find `.env` automatically. In Classic mode, `.env` should live next to `composer.json` in the **project root** — not inside `app/`:
