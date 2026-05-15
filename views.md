@@ -62,6 +62,7 @@ Every Twig template receives these variables automatically:
 `site.*` values come from `get_bloginfo()` — not raw `get_option()`. This means WordPress filters like `bloginfo` are applied, and plugins that modify these values will be respected. If you need the raw option value, use `{{ options.blogname }}` instead.
 :::
 
+```twig
 {# Global URLs #}
 {{ globals.home_url }}
 {{ globals.theme_url }}
