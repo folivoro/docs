@@ -13,6 +13,8 @@ my-project/
 │   ├── Taxonomy/         # Custom taxonomies
 │   ├── Module/           # Reusable UI modules
 │   ├── Api/              # REST API controllers
+│   ├── Console/Commands/ # WP-CLI commands
+│   ├── Extensions/View/  # Twig helpers and directives
 │   └── Providers/        # Service providers
 ├── public/
 │   └── wp-content/
@@ -20,63 +22,66 @@ my-project/
 │       │   └── cecropia.php   # Bootstraps Sloth before the theme loads
 │       └── themes/
 │           └── my-theme/      # The active theme (see Theme structure below)
+├── storage/              # Auto-created — add to .gitignore
+│   ├── cache/            # Twig and manifest cache
+│   └── logs/             # Application logs
+├── stubs/                # Optional — published via wp sloth stub:publish
 ├── vendor/
 ├── composer.json
 └── .env
 ```
 
-The project root — where `composer.json` lives — is the base path. `app/` holds application logic that is shared across themes and independent of any single theme.
+The project root — where `composer.json` lives — is the base path. `app/` holds application logic shared across themes. `storage/` always lives at the project root, never inside `app/`.
 
 ## Theme mode
 
 ```
 my-theme/
-├── app/                  # Same conventions as Classic mode's app/ — optional
+├── config/               # Configuration files
 ├── Includes/
 ├── Model/
 ├── Taxonomy/
 ├── Module/
 ├── Api/
+├── Console/Commands/
+├── Extensions/View/
 ├── Providers/
-├── config/
 ├── View/
 │   ├── Layout/           # Twig templates matching the WordPress template hierarchy
 │   └── Module/           # Module templates
-├── cache/                # Auto-created by Sloth
-├── logs/                 # Auto-created by Sloth
+├── storage/              # Auto-created — add to .gitignore
+│   ├── cache/
+│   └── logs/
+├── stubs/                # Optional — published via wp sloth stub:publish
 ├── functions.php         # Bootstraps Sloth
 ├── composer.json
 └── .env
 ```
 
-The theme directory is the base path. Everything lives inside the theme.
+The theme directory is both the project root and the app root. Everything lives inside the theme.
 
 ## Theme structure (both modes)
 
-The active theme directory always follows this layout:
+The active theme always has a `View/` directory:
 
 ```
 my-theme/
-├── View/
-│   ├── Layout/           # Template hierarchy templates
-│   │   ├── index.twig
-│   │   ├── single.twig
-│   │   ├── single-project.twig
-│   │   ├── archive-project.twig
-│   │   ├── page.twig
-│   │   └── 404.twig
-│   └── Module/           # Module templates
-│       ├── hero.twig
-│       └── featured-projects.twig
-├── storage/              # Auto-created — add to .gitignore
-│   ├── cache/            # Twig and manifest cache
-│   └── logs/             # Application logs
-└── functions.php
+└── View/
+    ├── Layout/           # Template hierarchy templates
+    │   ├── index.twig
+    │   ├── single.twig
+    │   ├── single-project.twig
+    │   ├── archive-project.twig
+    │   ├── page.twig
+    │   └── 404.twig
+    └── Module/           # Module templates
+        ├── hero.twig
+        └── featured-projects.twig
 ```
 
 ## Auto-discovery
 
-Sloth scans both `app/{Directory}/` and `theme/{Directory}/` for each concern. This means in Classic mode you can split classes between `app/` and `theme/` freely — a model shared across themes lives in `app/Model/`, a theme-specific module lives in `theme/Module/`.
+Sloth scans both `app/{Directory}/` and `theme/{Directory}/` for each concern:
 
 | Directory | What Sloth discovers |
 |-----------|----------------------|
@@ -86,27 +91,29 @@ Sloth scans both `app/{Directory}/` and `theme/{Directory}/` for each concern. T
 | `Api/` | REST API controllers |
 | `Providers/` | Service providers |
 | `Context/` | Template context providers |
-| `Extensions/View/Formatters/` | Twig filters |
-| `Extensions/View/Helpers/` | Twig functions |
-| `Includes/` | PHP files required automatically on `init` |
-| `config/` | Configuration files loaded into `config()` |
+| `Extensions/View/` | Twig helpers and directives |
+| `Console/Commands/` | WP-CLI commands |
+| `Includes/` | PHP files required on `init` |
+| `config/` | Configuration files |
 
 ## Registered paths
 
-All paths are accessible at runtime via `app()->path()`:
+All paths are accessible via typed accessors:
 
 ```php
-app()->path();              // project root (basePath)
-app()->path('app');         // app/ directory
-app()->path('theme');       // active theme directory
-app()->path('cache');       // theme/cache/
-app()->path('logs');        // theme/logs/
-app()->path('uploads');     // WordPress uploads directory
-app()->path('vendor');      // vendor/ directory
-app()->path('cms');         // WordPress ABSPATH
+app()->basePath();          // project root (where composer.json lives)
+app()->appPath();           // app/ in Classic, theme root in Theme mode
+app()->themePath();         // active theme directory
+app()->configPath();        // app/config/ or theme/config/
+app()->storagePath();       // project root storage/
+app()->cachePath();         // storage/cache/
+app()->logsPath();          // storage/logs/
+app()->uploadsPath();       // WordPress uploads directory
+app()->cmsPath();           // WordPress ABSPATH
+app()->pluginsPath();       // WordPress plugins directory
 
-// Subdirectories
-app()->path('Model');              // app/Model/
-app()->path('Model', 'theme');     // theme/Model/
-app()->path('config', 'app');      // app/config/
+// With subdirectory
+app()->appPath('Model');        // app/Model/
+app()->themePath('View');       // theme/View/
+app()->cachePath('Twig');       // storage/cache/Twig/
 ```

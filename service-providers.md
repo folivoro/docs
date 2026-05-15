@@ -6,6 +6,17 @@ If you've never worked with this pattern before, think of it as a structured rep
 
 Sloth's service provider system is built directly on Laravel's. If you want to understand the pattern in depth before diving in, [Laravel's documentation](https://laravel.com/docs/providers) is the best resource available.
 
+## Generating a provider
+
+```bash
+# Theme mode — always goes to theme/Providers/
+wp sloth make:provider ThemeSetupProvider
+
+# Classic mode — choose destination
+wp sloth make:provider ThemeSetupProvider --theme   # → theme/Providers/
+wp sloth make:provider AppServiceProvider --app     # → app/Providers/
+```
+
 ## Anatomy of a provider
 
 ```php

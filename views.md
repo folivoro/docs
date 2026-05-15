@@ -18,6 +18,31 @@ theme/View/
     └── featured-projects.twig
 ```
 
+## Generating a layout
+
+```bash
+# Interactive — select from the full WordPress template hierarchy
+wp sloth make:layout
+
+# Direct — create a specific template immediately
+wp sloth make:layout single
+wp sloth make:layout single-project
+wp sloth make:layout archive-event
+wp sloth make:layout page-contact
+```
+
+The interactive mode shows the full WordPress template hierarchy and prompts for any placeholders — post type, taxonomy, term or slug — using suggestions from your registered models and taxonomies.
+
+All layouts extend `Partials/wrapper.twig` by default:
+
+```twig
+{% extends 'Partials/wrapper.twig' %}
+
+{% block content %}
+
+{% endblock %}
+```
+
 ## Automatic context
 
 Every Twig template receives these variables automatically:
@@ -37,7 +62,6 @@ Every Twig template receives these variables automatically:
 `site.*` values come from `get_bloginfo()` — not raw `get_option()`. This means WordPress filters like `bloginfo` are applied, and plugins that modify these values will be respected. If you need the raw option value, use `{{ options.blogname }}` instead.
 :::
 
-``` twig
 {# Global URLs #}
 {{ globals.home_url }}
 {{ globals.theme_url }}
@@ -136,6 +160,14 @@ return Response::view('Layout/projects', ['projects' => $projects]);
 ## Extending Twig
 
 Sloth uses a `AbstractViewExtension` system for registering custom helpers and directives. Drop a subclass in `app/Extensions/View/` or `theme/Extensions/View/` and Sloth discovers it automatically.
+
+### Generating an extension
+
+```bash
+wp sloth make:extension FormatExtension
+```
+
+Creates `app/Extensions/View/FormatExtension.php` (Classic) or `theme/Extensions/View/FormatExtension.php` (Theme mode) with `getHelpers()`, `getDirectives()` and `share()` ready to fill in.
 
 ### Helpers
 

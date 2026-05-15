@@ -2,7 +2,20 @@
 
 Modules are reusable UI components — a PHP class paired with a Twig template. Drop a class extending `Sloth\Module\Module` into `app/Module/` or `theme/Module/` and Sloth discovers it automatically.
 
-## Creating a module
+## Generating a module
+
+```bash
+wp sloth make:module HeroModule
+```
+
+This creates two files:
+
+```
+theme/Module/HeroModule/HeroModule.php
+theme/Module/HeroModule/hero-module.twig
+```
+
+## Creating a module manually
 
 ```php
 <?php

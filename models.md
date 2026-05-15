@@ -2,7 +2,15 @@
 
 Sloth models represent WordPress custom post types as Eloquent models. Under the hood, Sloth builds on [Corcel](https://github.com/corcel/corcel) — a Laravel package that maps WordPress database tables to Eloquent models. If you've used Eloquent before, models will feel immediately familiar.
 
-## Creating a model
+## Generating a model
+
+```bash
+wp sloth make:model Project
+```
+
+This creates `app/Model/Project.php` (Classic mode) or `theme/Model/Project.php` (Theme mode) with sensible defaults.
+
+## Creating a model manually
 
 Drop a class extending `Sloth\Model\Model` into `app/Model/` or `theme/Model/` and Sloth registers it automatically as a WordPress custom post type.
 
